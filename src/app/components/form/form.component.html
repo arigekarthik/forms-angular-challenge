@@ -5,8 +5,13 @@
 </div>
 <div class="list-view">
   <div class="col-sm-4 btn-div">
-      <!--call addPatient method when clicking this button -->
-    <button id="add-user" class="glyphicon glyphicon-plus btn btn-success btn-spc" type="button" >
+    <!--call addPatient method when clicking this button -->
+    <button
+      id="add-user"
+      class="glyphicon glyphicon-plus btn btn-success btn-spc"
+      type="button"
+      (click)="addPatient()"
+    >
       <span class="btn-value"> Register New Patient </span>
     </button>
   </div>
@@ -26,29 +31,70 @@
           <th>Update</th>
         </tr>
       </thead>
-      <tbody *ngIf=list.length>
-          <!-- display list-->
-        <tr id="table-row" >
-          <td id="table-firstname" class="td-column"><!-- display firstname--></td>
-          <td id="table-lastname" ><!-- display lastname--></td>
-          <td id="table-gender"><!-- display gender--></td>
-          <td id="table-dob"><!-- display date of birth--></td>
-          <td id="table-mobile"><!-- display mobile number--></td>
-          <td id="table-email"><!-- display email--></td>
-          <td id="table-priority"><!-- display priority--></td>
+      <tbody *ngIf="list.length">
+        <!-- display list-->
+        <tr id="table-row" *ngFor="let p of list; let i = index">
+          <td id="table-firstname" class="td-column">
+            <!-- display firstname-->
+            {{ p.firstName }}
+          </td>
+          <td id="table-lastname">
+            {{ p.lastName }}
+            <!-- display lastname-->
+          </td>
+          <td id="table-gender">
+            <!-- display gender-->
+            {{ p.gender }}
+          </td>
+          <td id="table-dob">
+            <!-- display date of birth-->
+            {{ p.dob }}
+          </td>
+          <td id="table-mobile">
+            <!-- display mobile number-->
+            {{ p.mobile }}
+          </td>
+          <td id="table-email">
+            <!-- display email-->
+            {{ p.email }}
+          </td>
+          <td id="table-priority">
+            <!-- display priority-->
+            {{ p.priority }}
+          </td>
           <td id="table-condition">
-              <!-- display current condition in required format-->
+            <!-- display current condition in required format-->
+            <ng-container *ngIf="p.cd.length == 0">
+              ----
+            </ng-container>
+            <ng-container *ngIf="p.cd.length != 0">
+              {{ p.cd }}
+            </ng-container>
           </td>
           <td id="table-description">
-              <!-- display description in required format-->
+            <!-- display description in required format-->
+            <ng-container *ngIf="!p.description">
+              ----
+            </ng-container>
+            <ng-container *ngIf="p.description">
+              {{ p.description }}
+            </ng-container>
           </td>
           <td class="column-btn">
-              <!--call edit method when clicking this button -->
-            <button id="user-edit" class=" btn-width btn btn-info glyphicon glyphicon-edit btn-spc" >
+            <!--call edit method when clicking this button -->
+            <button
+              id="user-edit"
+              class="btn-width btn btn-info glyphicon glyphicon-edit btn-spc"
+              (click)="edit(p, i)"
+            >
               <span class="btn-value">Edit</span>
             </button>
-              <!--call delete method when clicking this button -->
-            <button id="user-delete" class="btn btn-danger glyphicon glyphicon-minus btn-spc" >
+            <!--call delete method when clicking this button -->
+            <button
+              id="user-delete"
+              class="btn btn-danger glyphicon glyphicon-minus btn-spc"
+              (delete)="delete(i)"
+            >
               <span class="btn-value">Delete</span>
             </button>
           </td>
@@ -56,162 +102,331 @@
       </tbody>
     </table>
   </div>
-    <!--noRecordsFound property message should be displayed if list is empty -->
-    <!--noRecordsFound property message should be hidden if form enabled -->
-  <p id="no-records" class="no-record msg-div">
+  <!--noRecordsFound property message should be displayed if list is empty -->
+  <!--noRecordsFound property message should be hidden if form enabled -->
+  <p
+    id="no-records"
+    class="no-record msg-div"
+    *ngIf="!isFormEnabled && list.length == 0"
+  >
     <!--noRecordsFound property should be displayed here-->
+    {{ noRecordsFound }}
   </p>
 </div>
-    <!--form-container division(form) should be enabled when clicking on Register New Patient button/ Edit patient -->
-  <div id="form-container" *ngIf="isFormEnabled" >
-    <div class="form">
-      <div class="col-sm-12 ">
-        <div class="col-sm-6 div-header">
-          <h2 class="header">Enter Patient details</h2>
+<!--form-container division(form) should be enabled when clicking on Register New Patient button/ Edit patient -->
+<div id="form-container" *ngIf="isFormEnabled">
+  <div class="form">
+    <div class="col-sm-12">
+      <div class="col-sm-6 div-header">
+        <h2 class="header">Enter Patient details</h2>
+      </div>
+      <div class="col-sm-6 close-form">
+        <!--call goback method when clicking this close-form span -->
+        <!-- form-container division(form) should be disabled when clicking this close-form span-->
+        <span
+          id="close-form"
+          class="glyphicon glyphicon-close close2"
+          (click)="goback()"
+          >&times;</span
+        >
+      </div>
+    </div>
+    <!--pass form values to submitForm method if form is valid -->
+    <form [formGroup]="complexForm" (submit)="submitForm(complexForm.value)">
+      <button (click)="prt()"></button>
+      <div class="form-group">
+        <label class="label-name">
+          First Name:<span class="required">*</span>
+        </label>
+        <input
+          id="firstname"
+          class="form-control text-box"
+          type="text"
+          placeholder="FIRSTNAME"
+          formControlName="firstName"
+        />
+        <div
+          id="error-no-firstname"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('firstName').hasError('required')"
+        >
+          <!--emptyFirstname property should be displayed here-->
+          {{ emptyFirstname }}
         </div>
-        <div class="col-sm-6 close-form ">
-            <!--call goback method when clicking this close-form span -->
-            <!-- form-container division(form) should be disabled when clicking this close-form span-->
-          <span id="close-form" class="glyphicon glyphicon-close close2">&times;</span>
+        <div
+          id="error-minlength-firstname"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('firstName').hasError('minlength')"
+        >
+          <!--minlengthFirstname property should be displayed here-->
+          {{ minlengthFirstname }}
+        </div>
+        <div
+          id="error-maxlength-firstname"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('firstName').hasError('maxlength')"
+        >
+          <!--maxlengthFirstname property should be displayed here-->
+          {{ maxlengthFirstname }}
         </div>
       </div>
-        <!--pass form values to submitForm method if form is valid -->
-      <form >
 
-        <div class="form-group">
-          <label class="label-name">
-            First Name:<span class="required">*</span>
+      <div class="form-group">
+        <label class="label-name"
+          >Last Name:
+          <span class="required">*</span>
+        </label>
+        <input
+          id="lastname"
+          class="form-control text-box"
+          type="text"
+          placeholder="LASTNAME"
+          formControlName="lastName"
+        />
+        <div
+          id="error-no-lastname"
+          class="alert alert-danger"
+          *ngIf="complexForm.get('lastName').hasError('required')"
+        >
+          <!--emptyLastname property should be displayed here-->
+          {{ emptyLastname }}
+        </div>
+        <div
+          id="error-minlength-lastname"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('lastName').hasError('minlength')"
+        >
+          <!--minlengthLastname property should be displayed here-->
+          {{ minlengthLastname }}
+        </div>
+        <div
+          id="error-maxlength-lastname"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('lastName').hasError('maxlength')"
+        >
+          <!--maxlengthLastname property should be displayed here-->
+          {{ maxlengthLastname }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name"
+          >Gender:
+          <span class="required">*</span>
+        </label>
+        <div class="input-div">
+          <input
+            type="radio"
+            id="male"
+            class="input-content"
+            value="Male"
+            formControlName="gender"
+          />
+          <!--male radio button should be enabled when clicking this label -->
+          <label class="label-content" for="male">Male</label>
+          <input
+            type="radio"
+            id="female"
+            class="input-content"
+            value="Female"
+            formControlName="gender"
+          />
+          <!--female radio button should be enabled when clicking this label -->
+          <label class="label-content" for="female">Female</label>
+        </div>
+        <div
+          id="error-no-gender"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('gender').hasError('required')"
+        >
+          <!--noGender property should be displayed here-->
+          {{ noGender }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name">
+          Date of birth:<span class="required">*</span>
+        </label>
+        <div>
+          <input
+            id="date-input"
+            class="form-control date-input glyphicon glyphicon-calendar"
+            type="date"
+            placeholder="Date of birth"
+            required
+            min="1968-01-01"
+            max="{{ today }}"
+            formControlName="dob"
+          />
+        </div>
+        <div
+          id="error-no-dob"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('dob').hasError('required')"
+        >
+          <!--noDob property should be displayed here-->
+          {{ noDob }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name">
+          Contact number:<span class="required">*</span>
+        </label>
+        <input
+          id="mobile"
+          class="form-control text-box"
+          type="text"
+          placeholder="mobile number"
+          formControlName="mobile"
+        />
+        <div
+          id="error-no-mobile"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('mobile').hasError('required')"
+        >
+          <!--noMobile property should be displayed here-->
+          {{ noMobile }}
+        </div>
+        <div
+          id="error-number-mobile"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('mobile').hasError('pattern')"
+        >
+          <!--numberMobile property should be displayed here-->
+          {{ numberMobile }}
+        </div>
+        <div
+          id="error-maxlength-mobile"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('mobile').hasError('maxlength')"
+        >
+          <!--maxlengthMobile property should be displayed here-->
+          {{ maxlengthMobile }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name" for="email">
+          Email:<span class="required">*</span>
+        </label>
+        <input
+          id="email"
+          class="form-control text-box"
+          type="email"
+          placeholder="example:saran12@tcs.com"
+          formControlName="email"
+        />
+        <div
+          id="error-no-email"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('email').hasError('required')"
+        >
+          <!--noEmail property should be displayed here-->
+          {{ noEmail }}
+        </div>
+        <div
+          id="error-pattern-email"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('email').hasError('pattern')"
+        >
+          <!--patternEmail property should be displayed here-->
+          {{ patternEmail }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name" for="location">
+          Priority:<span class="required">*</span>
+        </label>
+        <div>
+          <select
+            id="select-priority"
+            class="text-box select"
+            formControlName="priority"
+          >
+            <option class="label-content" value="null" disabled="true"
+              >Select Category</option
+            >
+            <option id="normal" class="label-content" value="Normal"
+              >Normal</option
+            >
+            <option id="urgent" class="label-content" value="Urgent"
+              >Urgent</option
+            >
+          </select>
+        </div>
+        <div
+          id="error-no-priority"
+          class="alert alert-danger error-msg"
+          *ngIf="complexForm.get('priority').hasError('required')"
+        >
+          <!--noPriority property should be displayed here-->
+          {{ noPriority }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-name"
+          >Please check off any current conditions you suffer from:</label
+        >
+        <div class="input-div">
+          <input
+            id="fever"
+            type="checkbox"
+            class="input-content"
+            formControlName="fever"
+          />
+          <!--fever checkbox should be enabled when clicking this label -->
+          <label class="label-content" for="fever"
+            >Chronic fever/unexpected weight loss</label
+          >
+          <input
+            id="ear"
+            type="checkbox"
+            class="input-content"
+            formControlName="ear"
+          />
+          <!--ear checkbox should be enabled when clicking this label -->
+          <label class="label-content" for="ear"
+            >Ear/nose/throat problems
           </label>
-          <input id="firstname" class="form-control text-box" type="text" placeholder="FIRSTNAME" >
-          <div id="error-no-firstname" class="alert alert-danger error-msg">
-            <!--emptyFirstname property should be displayed here-->
-          </div>
-          <div id="error-minlength-firstname" class="alert alert-danger error-msg">
-            <!--minlengthFirstname property should be displayed here-->
-          </div>
-          <div id="error-maxlength-firstname" class="alert alert-danger error-msg">
-            <!--maxlengthFirstname property should be displayed here-->
-          </div>
+          <input
+            id="heart"
+            type="checkbox"
+            class="input-content"
+            formControlName="heart"
+          />
+          <!--heart checkbox should be enabled when clicking this label -->
+          <label class="label-content" for="heart">Heart problems </label>
         </div>
+      </div>
 
-        <div class="form-group" >
-          <label class="label-name">Last Name:
-            <span class="required">*</span>
-          </label>
-          <input id="lastname" class="form-control text-box" type="text" placeholder="LASTNAME">
-          <div id="error-no-lastname"  class="alert alert-danger">
-            <!--emptyLastname property should be displayed here-->
-          </div>
-          <div id="error-minlength-lastname"  class="alert alert-danger error-msg">
-            <!--minlengthLastname property should be displayed here-->
-          </div>
-          <div id="error-maxlength-lastname" class="alert alert-danger error-msg">
-            <!--maxlengthLastname property should be displayed here-->
-          </div>
-        </div>
+      <div class="form-group">
+        <label class="label-name" for="description">
+          Description: <span class="xs-font">(Optional)</span>
+        </label>
+        <textarea
+          id="description"
+          class="form-control"
+          placeholder="Briefly describe the issue"
+          formControlName="description"
+        >
+        </textarea>
+      </div>
 
-        <div class="form-group">
-          <label class="label-name">Gender:
-            <span class="required">*</span>
-          </label>
-          <div class="input-div">
-          <input type="radio" id="male" class="input-content" value="Male">
-              <!--male radio button should be enabled when clicking this label -->
-          <label class="label-content">Male</label>
-          <input type="radio" id="female" class="input-content" value="Female">
-              <!--female radio button should be enabled when clicking this label -->
-          <label class="label-content">Female</label>
-          </div>
-          <div id="error-no-gender" class="alert alert-danger error-msg">
-            <!--noGender property should be displayed here-->
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label-name">
-            Date of birth:<span class="required">*</span>
-          </label>
-          <div >
-          <input id="date-input" class="form-control date-input glyphicon glyphicon-calendar" type="date" placeholder="Date of birth" required min="1968-01-01" max="{{today}}">
-          </div>
-          <div id="error-no-dob" class="alert alert-danger error-msg">
-            <!--noDob property should be displayed here-->
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label-name">
-            Contact number:<span class="required">*</span>
-          </label>
-          <input id="mobile" class="form-control text-box" type="text" placeholder="mobile number">
-          <div id="error-no-mobile" class="alert alert-danger error-msg">
-            <!--noMobile property should be displayed here-->
-          </div>
-          <div id="error-number-mobile" class="alert alert-danger error-msg">
-            <!--numberMobile property should be displayed here-->
-          </div>
-          <div id="error-maxlength-mobile" class="alert alert-danger error-msg">
-            <!--maxlengthMobile property should be displayed here-->
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label-name" for="email">
-            Email:<span class="required">*</span>
-          </label>
-          <input id="email" class="form-control text-box" type="email"  placeholder="example:saran12@tcs.com">
-          <div id="error-no-email" class="alert alert-danger error-msg">
-            <!--noEmail property should be displayed here-->
-          </div>
-          <div id="error-pattern-email" class="alert alert-danger error-msg">
-            <!--patternEmail property should be displayed here-->
-          </div>
-        </div>
-
-        <div class="form-group ">
-          <label class="label-name" for="location">
-            Priority:<span class="required">*</span>
-          </label>
-          <div>
-            <select id="select-priority" class="text-box select" >
-              <option class="label-content" value="null" disabled="true" >Select Category</option>
-              <option id="normal" class="label-content" value="Normal">Normal</option>
-              <option id="urgent" class="label-content" value="Urgent">Urgent</option>
-            </select>
-          </div>
-          <div id="error-no-priority" class="alert alert-danger error-msg">
-            <!--noPriority property should be displayed here-->
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label-name">Please check off any current conditions you suffer from:</label>
-          <div class="input-div">
-            <input id="fever" type="checkbox" class="input-content">
-              <!--fever checkbox should be enabled when clicking this label -->
-            <label class="label-content">Chronic fever/unexpected weight loss</label>
-            <input id="ear" type="checkbox" class="input-content" >
-              <!--ear checkbox should be enabled when clicking this label -->
-            <label class="label-content">Ear/nose/throat problems </label>
-            <input id="heart" type="checkbox" class="input-content" >
-              <!--heart checkbox should be enabled when clicking this label -->
-            <label class="label-content">Heart problems </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label-name" for="description">
-            Description: <span class="xs-font">(Optional)</span>
-          </label>
-          <textarea id="description" class="form-control " placeholder="Briefly describe the issue">               </textarea>
-        </div>
-
-        <div class="form-group">
-          <!--disable 'submit' button if form is invalid -->
-          <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">Submit</button>
-        </div>
-
-      </form>
-    </div>
+      <div class="form-group">
+        <!--disable 'submit' button if form is invalid -->
+        <button
+          type="submit"
+          id="submit-btn"
+          class="btn btn-primary submit-btn"
+          [disabled]="!complexForm.valid"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
   </div>
-
+</div>
