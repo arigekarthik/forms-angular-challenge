@@ -1,0 +1,217 @@
+<div class="container">
+  <div class="app-title">
+    <span class="text-mid">Patient Registration</span>
+  </div>
+</div>
+<div class="list-view">
+  <div class="col-sm-4 btn-div">
+      <!--call addPatient method when clicking this button -->
+    <button id="add-user" class="glyphicon glyphicon-plus btn btn-success btn-spc" type="button" >
+      <span class="btn-value"> Register New Patient </span>
+    </button>
+  </div>
+  <div class="table-div">
+    <table class="table-class">
+      <thead>
+        <tr class="table-head">
+          <th>FirstName</th>
+          <th>LastName</th>
+          <th>Gender</th>
+          <th>DOB(yyyy-MM-dd)</th>
+          <th>Mobile</th>
+          <th>Email</th>
+          <th>Priority</th>
+          <th>Current condition</th>
+          <th>Description</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody *ngIf=list.length>
+          <!-- display list-->
+        <tr id="table-row" >
+          <td id="table-firstname" class="td-column"><!-- display firstname--></td>
+          <td id="table-lastname" ><!-- display lastname--></td>
+          <td id="table-gender"><!-- display gender--></td>
+          <td id="table-dob"><!-- display date of birth--></td>
+          <td id="table-mobile"><!-- display mobile number--></td>
+          <td id="table-email"><!-- display email--></td>
+          <td id="table-priority"><!-- display priority--></td>
+          <td id="table-condition">
+              <!-- display current condition in required format-->
+          </td>
+          <td id="table-description">
+              <!-- display description in required format-->
+          </td>
+          <td class="column-btn">
+              <!--call edit method when clicking this button -->
+            <button id="user-edit" class=" btn-width btn btn-info glyphicon glyphicon-edit btn-spc" >
+              <span class="btn-value">Edit</span>
+            </button>
+              <!--call delete method when clicking this button -->
+            <button id="user-delete" class="btn btn-danger glyphicon glyphicon-minus btn-spc" >
+              <span class="btn-value">Delete</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    <!--noRecordsFound property message should be displayed if list is empty -->
+    <!--noRecordsFound property message should be hidden if form enabled -->
+  <p id="no-records" class="no-record msg-div">
+    <!--noRecordsFound property should be displayed here-->
+  </p>
+</div>
+    <!--form-container division(form) should be enabled when clicking on Register New Patient button/ Edit patient -->
+  <div id="form-container" *ngIf="isFormEnabled" >
+    <div class="form">
+      <div class="col-sm-12 ">
+        <div class="col-sm-6 div-header">
+          <h2 class="header">Enter Patient details</h2>
+        </div>
+        <div class="col-sm-6 close-form ">
+            <!--call goback method when clicking this close-form span -->
+            <!-- form-container division(form) should be disabled when clicking this close-form span-->
+          <span id="close-form" class="glyphicon glyphicon-close close2">&times;</span>
+        </div>
+      </div>
+        <!--pass form values to submitForm method if form is valid -->
+      <form >
+
+        <div class="form-group">
+          <label class="label-name">
+            First Name:<span class="required">*</span>
+          </label>
+          <input id="firstname" class="form-control text-box" type="text" placeholder="FIRSTNAME" >
+          <div id="error-no-firstname" class="alert alert-danger error-msg">
+            <!--emptyFirstname property should be displayed here-->
+          </div>
+          <div id="error-minlength-firstname" class="alert alert-danger error-msg">
+            <!--minlengthFirstname property should be displayed here-->
+          </div>
+          <div id="error-maxlength-firstname" class="alert alert-danger error-msg">
+            <!--maxlengthFirstname property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group" >
+          <label class="label-name">Last Name:
+            <span class="required">*</span>
+          </label>
+          <input id="lastname" class="form-control text-box" type="text" placeholder="LASTNAME">
+          <div id="error-no-lastname"  class="alert alert-danger">
+            <!--emptyLastname property should be displayed here-->
+          </div>
+          <div id="error-minlength-lastname"  class="alert alert-danger error-msg">
+            <!--minlengthLastname property should be displayed here-->
+          </div>
+          <div id="error-maxlength-lastname" class="alert alert-danger error-msg">
+            <!--maxlengthLastname property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name">Gender:
+            <span class="required">*</span>
+          </label>
+          <div class="input-div">
+          <input type="radio" id="male" class="input-content" value="Male">
+              <!--male radio button should be enabled when clicking this label -->
+          <label class="label-content">Male</label>
+          <input type="radio" id="female" class="input-content" value="Female">
+              <!--female radio button should be enabled when clicking this label -->
+          <label class="label-content">Female</label>
+          </div>
+          <div id="error-no-gender" class="alert alert-danger error-msg">
+            <!--noGender property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name">
+            Date of birth:<span class="required">*</span>
+          </label>
+          <div >
+          <input id="date-input" class="form-control date-input glyphicon glyphicon-calendar" type="date" placeholder="Date of birth" required min="1968-01-01" max="{{today}}">
+          </div>
+          <div id="error-no-dob" class="alert alert-danger error-msg">
+            <!--noDob property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name">
+            Contact number:<span class="required">*</span>
+          </label>
+          <input id="mobile" class="form-control text-box" type="text" placeholder="mobile number">
+          <div id="error-no-mobile" class="alert alert-danger error-msg">
+            <!--noMobile property should be displayed here-->
+          </div>
+          <div id="error-number-mobile" class="alert alert-danger error-msg">
+            <!--numberMobile property should be displayed here-->
+          </div>
+          <div id="error-maxlength-mobile" class="alert alert-danger error-msg">
+            <!--maxlengthMobile property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name" for="email">
+            Email:<span class="required">*</span>
+          </label>
+          <input id="email" class="form-control text-box" type="email"  placeholder="example:saran12@tcs.com">
+          <div id="error-no-email" class="alert alert-danger error-msg">
+            <!--noEmail property should be displayed here-->
+          </div>
+          <div id="error-pattern-email" class="alert alert-danger error-msg">
+            <!--patternEmail property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group ">
+          <label class="label-name" for="location">
+            Priority:<span class="required">*</span>
+          </label>
+          <div>
+            <select id="select-priority" class="text-box select" >
+              <option class="label-content" value="null" disabled="true" >Select Category</option>
+              <option id="normal" class="label-content" value="Normal">Normal</option>
+              <option id="urgent" class="label-content" value="Urgent">Urgent</option>
+            </select>
+          </div>
+          <div id="error-no-priority" class="alert alert-danger error-msg">
+            <!--noPriority property should be displayed here-->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name">Please check off any current conditions you suffer from:</label>
+          <div class="input-div">
+            <input id="fever" type="checkbox" class="input-content">
+              <!--fever checkbox should be enabled when clicking this label -->
+            <label class="label-content">Chronic fever/unexpected weight loss</label>
+            <input id="ear" type="checkbox" class="input-content" >
+              <!--ear checkbox should be enabled when clicking this label -->
+            <label class="label-content">Ear/nose/throat problems </label>
+            <input id="heart" type="checkbox" class="input-content" >
+              <!--heart checkbox should be enabled when clicking this label -->
+            <label class="label-content">Heart problems </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label-name" for="description">
+            Description: <span class="xs-font">(Optional)</span>
+          </label>
+          <textarea id="description" class="form-control " placeholder="Briefly describe the issue">               </textarea>
+        </div>
+
+        <div class="form-group">
+          <!--disable 'submit' button if form is invalid -->
+          <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">Submit</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
